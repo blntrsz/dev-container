@@ -1,42 +1,23 @@
-FROM ubuntu
+FROM alpine:edge
 
-# install
-RUN apt update -y && apt upgrade -y
-RUN apt-get install -y \
-    git \
-    zsh \
-    make \
-    build-essential \
-    ninja-build \
-    gettext \
-    libtool  \
-    libtool-bin \
-    autoconf \
-    automake \
-    cmake \
-    g++ \
-    pkg-config \
-    unzip \
-    curl \
-    stow
+RUN apk add \
+  zsh \
+  git \
+  nodejs \
+  neovim \
+  ripgrep \
+  alpine-sdk \
+  tmux \
+  openssh \
+  --update
 
-# install neovim
-RUN git clone https://github.com/neovim/neovim.git
-RUN cd neovim && make -j 20
-RUN cd neovim && make install
+RUN git clone https://github.com/NvChad/NvChad ~/.config/nvim
 
-RUN useradd -ms /bin/zsh balint
-RUN chown -R balint:balint /home/balint
-USER balint
-WORKDIR /home/balint
+RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'silent PackerSync'
+RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'silent PackerSync'
 
-# dotfiles
-RUN git clone https://github.com/blntrsz/.dotfiles.git ~/.dotfiles
+RUN mkdir ~/p
+WORKDIR /root/p
 
-RUN mkdir -p ~/.local/share/nvim/site/pack/packer/start
+COPY .gitconfig /root
 
-RUN git clone https://github.com/wbthomason/packer.nvim > ~/.local/share/nvim/site/pack/packer/start/packer.nvim
-
-RUN cd .dotfiles && bash setup
-
-# RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'silent PackerSync'

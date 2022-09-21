@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  ide:
+    image: dev-container
+    stdin_open: true
+    volumes:
+      - type: bind
+        source: ~/p
+        target: /root/p
+      - type: bind
+        source: ~/.ssh
+        target: /root/.ssh
